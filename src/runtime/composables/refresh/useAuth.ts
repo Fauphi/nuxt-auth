@@ -76,7 +76,6 @@ const signIn: ReturnType<typeof useLocalAuth>["signIn"] = async (
 };
 
 const refresh = async () => {
-  console.log("refresh: refresh");
   const nuxt = useNuxtApp();
   const config = useTypedBackendConfig(useRuntimeConfig(), "refresh");
   const { path, method } = config.endpoints.refresh;

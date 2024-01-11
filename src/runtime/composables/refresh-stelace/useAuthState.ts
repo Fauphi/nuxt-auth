@@ -33,7 +33,6 @@ export const useAuthState = (): UseAuthStateReturn => {
   );
 
   watch(rawStelaceToken, () => {
-    console.log("watcher rawStelaceToken: ", rawStelaceToken.value);
     _rawStelaceTokenCookie.value = rawStelaceToken.value;
   });
 
