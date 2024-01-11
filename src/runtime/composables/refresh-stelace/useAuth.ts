@@ -222,11 +222,15 @@ const refresh = async () => {
 const signOut: SignOutFunc = async (signOutOptions) => {
   const nuxt = useNuxtApp();
   const runtimeConfig = await callWithNuxt(nuxt, useRuntimeConfig);
-  const config = useTypedBackendConfig(runtimeConfig, "refresh");
-  const { data, rawToken, token, rawRefreshToken } = await callWithNuxt(
-    nuxt,
-    useAuthState
-  );
+  const config = useTypedBackendConfig(runtimeConfig, "refresh-stelace");
+  const {
+    data,
+    rawToken,
+    token,
+    rawRefreshToken,
+    rawStelaceToken,
+    rawStelaceRefreshToken,
+  } = await callWithNuxt(nuxt, useAuthState);
 
   const headers = new Headers({
     [config.token.headerName]: token.value,
@@ -234,6 +238,8 @@ const signOut: SignOutFunc = async (signOutOptions) => {
   data.value = null;
   rawToken.value = null;
   rawRefreshToken.value = null;
+  rawStelaceToken.value = null;
+  rawStelaceRefreshToken.value = null;
 
   const signOutConfig = config.endpoints.signOut;
   let res;
