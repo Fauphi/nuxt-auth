@@ -109,7 +109,6 @@ const signIn: ReturnType<typeof useLocalAuth>["signIn"] = async (
 };
 
 const refresh = async () => {
-  console.log("refresh-stelace: refresh");
   const nuxt = useNuxtApp();
   const config = useTypedBackendConfig(useRuntimeConfig(), "refresh");
   const { path, method } = config.endpoints.refresh;
@@ -172,12 +171,10 @@ const refresh = async () => {
   }
 
   if (!config.refreshOnlyToken) {
-    console.log("extracting stelace token");
     const extractedStelaceToken = jsonPointerGet(
       response,
       config.stelaceToken.signInResponseStelaceTokenPointer
     );
-    console.log("extractedStelaceToken", extractedStelaceToken);
     if (typeof extractedStelaceToken !== "string") {
       console.error(
         `Auth: string token expected, received instead: ${JSON.stringify(
@@ -193,12 +190,10 @@ const refresh = async () => {
   }
 
   if (!config.refreshOnlyToken) {
-    console.log("extracting stelace token");
     const extractedStelaceRefreshToken = jsonPointerGet(
       response,
       config.stelaceToken.signInResponseStelaceRefreshTokenPointer
     );
-    console.log("extractedStelaceRefreshToken", extractedStelaceRefreshToken);
     if (typeof extractedStelaceRefreshToken !== "string") {
       console.error(
         `Auth: string token expected, received instead: ${JSON.stringify(
