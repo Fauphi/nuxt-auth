@@ -61,7 +61,6 @@ export const useAuthState = () => {
       return "unauthenticated";
     }
   });
-  console.log("stelaceStatus: ", stelaceStatus.value);
   return {
     ...refreshAuthState,
     ...schemeSpecificState,

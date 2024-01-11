@@ -86,8 +86,6 @@ export const useAuthState = (): UseAuthStateReturn => {
     }
   });
 
-  console.log("stelaceStatus: ", stelaceStatus.value);
-
   return {
     ...refreshAuthState,
     ...schemeSpecificState,
