@@ -199,7 +199,7 @@ type ProviderLocalRefresh = Omit<ProviderLocal, "type"> & {
    *  When refreshOnlyToken is set, only the token will be refreshed
    *
    */
-  refreshOnlyToken?: true;
+  refreshOnlyToken?: boolean;
 
   refreshToken?: {
     /**
@@ -226,7 +226,7 @@ type ProviderLocalRefresh = Omit<ProviderLocal, "type"> & {
 /**
  * Configuration for the `refresh-stelace`-provider an extended version of the refresh provider.
  */
-type ProviderLocalRefreshStelace = Omit<ProviderLocal, "type"> & {
+type ProviderLocalRefreshStelace = Omit<ProviderLocalRefresh, "type"> & {
   /**
    * Uses the `authjs` provider to facilitate authentication. Currently, two providers exclusive are supported:
    * - `authjs`: `next-auth` / `auth.js` based OAuth, Magic URL, Credential provider for non-static applications
@@ -235,43 +235,6 @@ type ProviderLocalRefreshStelace = Omit<ProviderLocal, "type"> & {
    * Read more here: https://sidebase.io/nuxt-auth/v0.6/getting-started
    */
   type: Extract<SupportedAuthProviders, "refresh-stelace">;
-  endpoints?: {
-    /**
-     * What method and path to call to perform the sign-in. This endpoint must return a token that can be used to authenticate subsequent requests.
-     *
-     * @default { path: '/refresh', method: 'post' }
-     */
-    refresh?: { path?: string; method?: RouterMethod };
-    stelaceLogin?: { path?: string; method?: RouterMethod };
-    stelaceLogout?: { path?: string; method?: RouterMethod };
-    stelaceSession?: { path?: string; method?: RouterMethod };
-  };
-  /**
-   *  When refreshOnlyToken is set, only the token will be refreshed
-   *
-   */
-  refreshOnlyToken?: true;
-
-  refreshToken?: {
-    /**
-     * How to extract the authentication-token from the sign-in response.
-     *
-     * E.g., setting this to `/refreshToken/bearer` and returning an object like `{ refreshToken: { bearer: 'THE_AUTH_TOKEN' }, timestamp: '2023' }` from the `signIn` endpoint will
-     * result in `nuxt-auth` extracting and storing `THE_AUTH_TOKEN`.
-     *
-     * This follows the JSON Pointer standard, see it's RFC6901 here: https://www.rfc-editor.org/rfc/rfc6901
-     *
-     * @default /refreshToken  Access the `refreshToken` property of the sign-in response object
-     * @example /       Access the root of the sign-in response object, useful when your endpoint returns a plain, non-object string as the token
-     */
-    signInResponseRefreshTokenPointer?: string;
-    /**
-     * Maximum age to store the authentication token for. After the expiry time the token is automatically deleted on the application side, i.e., in the users' browser.
-     *
-     * Note: Your backend may reject / expire the token earlier / differently.
-     */
-    maxAgeInSeconds?: number;
-  };
 
   stelaceToken?: {
     /**
@@ -286,6 +249,7 @@ type ProviderLocalRefreshStelace = Omit<ProviderLocal, "type"> & {
      * @example /       Access the root of the sign-in response object, useful when your endpoint returns a plain, non-object string as the token
      */
     signInResponseStelaceTokenPointer?: string;
+    signInResponseStelaceRefreshTokenPointer?: string;
     /**
      * Maximum age to store the authentication token for. After the expiry time the token is automatically deleted on the application side, i.e., in the users' browser.
      *
@@ -333,7 +297,8 @@ export type ProviderAuthjs = {
 export type AuthProviders =
   | ProviderAuthjs
   | ProviderLocal
-  | ProviderLocalRefresh;
+  | ProviderLocalRefresh
+  | ProviderLocalRefreshStelace;
 
 /**
  * Configuration for the application-side session.

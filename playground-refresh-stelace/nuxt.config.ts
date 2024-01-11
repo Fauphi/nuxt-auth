@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   },
   auth: {
     provider: {
-      type: "refresh",
+      type: "refresh-stelace",
       // refreshOnlyToken: true,
       endpoints: {
         getSession: { path: "/user" },
@@ -16,11 +16,16 @@ export default defineNuxtConfig({
       },
       token: {
         signInResponseTokenPointer: "/token/accessToken",
-        maxAgeInSeconds: 60 * 5, // 5 min
+        maxAgeInSeconds: 60, // 5 min
         sameSiteAttribute: "lax",
       },
+      refreshOnlyToken: false,
       refreshToken: {
         signInResponseRefreshTokenPointer: "/token/refreshToken",
+      },
+      stelaceToken: {
+        signInResponseStelaceTokenPointer: "/token/stelaceToken",
+        signInResponseStelaceRefreshTokenPointer: "/token/stelaceRefreshToken",
       },
     },
     globalAppMiddleware: {

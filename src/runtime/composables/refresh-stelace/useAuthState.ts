@@ -1,51 +1,97 @@
-import { computed, watch, ComputedRef } from 'vue'
-import { CookieRef } from '#app'
-import { useTypedBackendConfig } from '../../helpers'
-import { useAuthState as useLocalAuthState } from '../local/useAuthState'
-import { useRuntimeConfig, useCookie, useState } from '#imports'
+import { computed, watch, ComputedRef } from "vue";
+import { CookieRef } from "#app";
+import { useTypedBackendConfig } from "../../helpers";
+import { useAuthState as useRefreshAuthState } from "../refresh/useAuthState";
+import { useRuntimeConfig, useCookie, useState } from "#imports";
+import { SessionStatus } from "../../types";
 
-type UseAuthStateReturn = ReturnType<typeof useLocalAuthState> & {
-  rawRefreshToken: CookieRef<string | null>;
-  refreshToken: ComputedRef<string | null>;
+type UseAuthStateReturn = ReturnType<typeof useRefreshAuthState> & {
+  rawStelaceToken: CookieRef<string | null>;
+  stelaceToken: ComputedRef<string | null>;
+  rawStelaceRefreshToken: ComputedRef<string | null>;
+  stelaceRefreshToken: ComputedRef<string | null>;
+  stelaceStatus: ComputedRef<SessionStatus>;
 };
 
 export const useAuthState = (): UseAuthStateReturn => {
-  const config = useTypedBackendConfig(useRuntimeConfig(), 'refresh')
-  const localAuthState = useLocalAuthState()
+  const config = useTypedBackendConfig(useRuntimeConfig(), "refresh");
+  const refreshAuthState = useRefreshAuthState();
+
   // Re-construct state from cookie, also setup a cross-component sync via a useState hack, see https://github.com/nuxt/nuxt/issues/13020#issuecomment-1397282717
-  const _rawRefreshTokenCookie = useCookie<string | null>(
-    'auth:refresh-token',
+  const _rawStelaceTokenCookie = useCookie<string | null>(
+    "auth:stelace:token",
     {
       default: () => null,
-      maxAge: config.refreshToken.maxAgeInSeconds,
-      sameSite: 'lax'
+      maxAge: config.stelaceToken.maxAgeInSeconds,
+      sameSite: "lax",
     }
-  )
+  );
 
-  const rawRefreshToken = useState(
-    'auth:raw-refresh-token',
-    () => _rawRefreshTokenCookie.value
-  )
+  const rawStelaceToken = useState(
+    "auth:raw-stelace-token",
+    () => _rawStelaceTokenCookie.value
+  );
 
-  watch(rawRefreshToken, () => {
-    _rawRefreshTokenCookie.value = rawRefreshToken.value
-  })
+  watch(rawStelaceToken, () => {
+    console.log("watcher rawStelaceToken: ", rawStelaceToken.value);
+    _rawStelaceTokenCookie.value = rawStelaceToken.value;
+  });
 
-  const refreshToken = computed(() => {
-    if (rawRefreshToken.value === null) {
-      return null
+  const stelaceToken = computed(() => {
+    if (rawStelaceToken.value === null) {
+      return null;
     }
-    return rawRefreshToken.value
-  })
+    return rawStelaceToken.value;
+  });
+
+  // stelace refresh token
+  const _rawStelaceRefreshTokenCookie = useCookie<string | null>(
+    "auth:stelace:refresh-token",
+    {
+      default: () => null,
+      maxAge: config.stelaceToken.maxAgeInSeconds,
+      sameSite: "lax",
+    }
+  );
+
+  const rawStelaceRefreshToken = useState(
+    "auth:raw-stelace-refresh-token",
+    () => _rawStelaceRefreshTokenCookie.value
+  );
+
+  watch(rawStelaceRefreshToken, () => {
+    _rawStelaceRefreshTokenCookie.value = rawStelaceRefreshToken.value;
+  });
+
+  const stelaceRefreshToken = computed(() => {
+    if (rawStelaceRefreshToken.value === null) {
+      return null;
+    }
+    return rawStelaceRefreshToken.value;
+  });
 
   const schemeSpecificState = {
-    refreshToken,
-    rawRefreshToken
-  }
+    stelaceToken,
+    rawStelaceToken,
+    stelaceRefreshToken,
+    rawStelaceRefreshToken,
+  };
+
+  // stelace status
+  const stelaceStatus = computed<SessionStatus>(() => {
+    if (stelaceToken.value && stelaceRefreshToken.value) {
+      return "authenticated";
+    } else {
+      return "unauthenticated";
+    }
+  });
+
+  console.log("stelaceStatus: ", stelaceStatus.value);
 
   return {
-    ...localAuthState,
-    ...schemeSpecificState
-  }
-}
-export default useAuthState
+    ...refreshAuthState,
+    ...schemeSpecificState,
+    stelaceStatus,
+  };
+};
+export default useAuthState;
