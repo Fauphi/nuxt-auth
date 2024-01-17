@@ -5,9 +5,15 @@ import { useRuntimeConfig, useCookie, useState } from "#imports";
 export const useAuthState = () => {
   const config = useTypedBackendConfig(useRuntimeConfig(), "local");
   const commonAuthState = makeCommonAuthState();
-  const _rawTokenCookie = useCookie("auth:token", { default: () => null, maxAge: config.token.maxAgeInSeconds, sameSite: config.token.sameSiteAttribute });
+  const _rawTokenCookie = useCookie("auth:token", {
+    default: () => null,
+    maxAge: config.token.maxAgeInSeconds,
+    sameSite: config.token.sameSiteAttribute
+  });
   const rawToken = useState("auth:raw-token", () => _rawTokenCookie.value);
   watch(rawToken, () => {
+    console.log("rawToken changed");
+    console.log(rawToken.value);
     _rawTokenCookie.value = rawToken.value;
   });
   const token = computed(() => {
