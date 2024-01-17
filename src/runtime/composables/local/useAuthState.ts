@@ -27,8 +27,6 @@ export const useAuthState = (): UseAuthStateReturn => {
 
   const rawToken = useState("auth:raw-token", () => _rawTokenCookie.value);
   watch(rawToken, () => {
-    console.log("rawToken changed");
-    console.log(rawToken.value);
     _rawTokenCookie.value = rawToken.value;
   });
 
